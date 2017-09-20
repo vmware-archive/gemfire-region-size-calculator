@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.pivotal</groupId>
+	<artifactId>parent-pom</artifactId>
+	<version>1.0.0</version>
+	<name>parent-pom</name>
+	<description>Region Size Calculator></description>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>client</module>
+		<module>functions</module>
+	</modules>
+
+	<properties>
+		<geode.core.version>1.1.1</geode.core.version>
+		<gemfire.version>8.2.6</gemfire.version>
+		<spring-shell.version>1.2.0.RELEASE</spring-shell.version>
+		<spring-boot.version>1.5.1.RELEASE</spring-boot.version>
+		<slf4j.version>1.7.23</slf4j.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>gemfire-release-repo</id>
+			<name>Gemfire</name>
+			<url>https://commercial-repo.pivotal.io/data3/gemfire-release-repo/gemfire</url>
+		</repository>
+		<repository>
+			<id>spring-release</id>
+			<name>Spring Releases</name>
+			<url>http://repo.spring.io/release/</url>
+		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone/</url>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/libs-milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>gemfire-repository</id>
+			<name>Gemfire Repository</name>
+			<url>http://dist.gemstone.com/maven/release</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<version>${spring-boot.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.shell/spring-shell -->
+		<dependency>
+			<groupId>org.springframework.shell</groupId>
+			<artifactId>spring-shell</artifactId>
+			<version>${spring-shell.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.gemstone.gemfire</groupId>
+			<artifactId>gemfire</artifactId>
+			<version>${gemfire.version}</version>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>io.pivotal.gemfire</groupId> -->
+<!-- 			<artifactId>geode-core</artifactId> -->
+<!-- 			<version>${gemfire.version}</version> -->
+<!-- 		</dependency> -->
+
+	</dependencies>
+
+</project>

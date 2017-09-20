@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache xsi:schemaLocation="http://schema.pivotal.io/gemfire/cache http://schema.pivotal.io/gemfire/cache/cache-8.1.xsd" lock-lease="120" lock-timeout="60" search-timeout="300" is-server="false" copy-on-read="false" version="8.1" xmlns="http://schema.pivotal.io/gemfire/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <pdx>
+    <pdx-serializer>
+      <class-name>com.gemstone.gemfire.pdx.ReflectionBasedAutoSerializer</class-name>
+      <parameter name="classes">
+        <string>.*</string>
+      </parameter>
+    </pdx-serializer>
+  </pdx>
+  <region name="Customer">
+    <region-attributes data-policy="partition"/>
+    <index name="prodProcessorIx" key-index="false" type="range" from-clause="/Customer" expression="srcProductProcessorId"/>
+    <index name="cIDIx" key-index="false" type="range" from-clause="/Customer" expression="customerDetailId"/> 
+  </region>
+  <region name="Phone">
+    <region-attributes data-policy="partition"/>
+  </region>
+  <region name="x">
+    <region-attributes scope="distributed-ack" data-policy="replicate"/>
+  </region>
+</cache>

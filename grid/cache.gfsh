@@ -1,0 +1,19 @@
+
+start server --name=server1 --server-port=0 --properties-file=config/gemfire.properties --initial-heap=2g --max-heap=2g --classpath=../../domain/target/domain-1.0.0.jar
+start server --name=server2 --server-port=0 --properties-file=config/gemfire.properties --initial-heap=2g --max-heap=2g --classpath=../../domain/target/domain-1.0.0.jar
+
+configure pdx --portable-auto-serializable-classes=".*";
+create region --name=Customers --type=PARTITION;
+create region --name=Phones --type=PARTITION;
+create region --name=PhoneCustomerXref --type=LOCAL;
+
+
+#destroy lucene index --region=/Customer --name=countryIx
+#create index --name=countryIx --region=Customer --expression=customerCountryCd
+#create index --name=customerDetailIdIx --region=Customer --expression=customerDetailId
+#create index --name=countryIx --region=Customer --expression=customerCountryCd --type=hash
+#create index --name=customerDetailIdIx --region=Customer --expression=customerDetailId --type=hash
+
+#destroy index --name=countryIx
+
+#destroy region --name=Customers 

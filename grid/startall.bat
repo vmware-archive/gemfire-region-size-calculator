@@ -1,0 +1,1 @@
+gfsh run --file=startCluster.gfsh

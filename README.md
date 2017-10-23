@@ -61,7 +61,7 @@ Optional argument: the number of samples to take. If you have a region with 1 bi
 
 Function execution arguments in gfsh are comma-delimited strings.
  
-Example: To calculate the size of the Customer partitioned region on server2 with a sample size of 5:
+Example: To calculate the size of the Customer *partitioned* region on server2 with a sample size of 5:
 
 **gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server2**
 ```
@@ -74,11 +74,10 @@ Execution summary
 ```
 
 
-Example: To calculate the size of the Customer partitioned region on server1 with a sample size of 5:
+Example: To calculate the size of the Customer *partitioned* region on server1 with a sample size of 5:
 
 **gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server1**
 ```
-
 Execution summary
 
            Member ID/Name             | Function Execution Result
@@ -88,7 +87,7 @@ Execution summary
 *Important note:* a partitioned region returns the answer node by node
 
 
-Example: To calculate the size of the Phone replicated region with a sample size of 5:
+Example: To calculate the size of the Phone *replicated* region with a sample size of 5:
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone,5" --member=server1**
 ```
@@ -100,7 +99,7 @@ Execution summary
 192.168.0.10(server1:50892)<v1>:56765 | {Serialized values size=1,563,000, Keys size=48,000, Region type=Replicated, Entries=1,000}
 ```
 
-Example: To calculate the size of the Phone replicated region with a sample size of 25:
+Example: To calculate the size of the Phone *replicated* region with a sample size of 25:
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone,25" --member=server1**
 ```
@@ -113,7 +112,7 @@ Execution summary
 ```
 
 
-Example: To calculate the size of the Phone replicated region using all entries:
+Example: To calculate the size of the Phone *replicated* region using all entries:
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone" --member=server1**
 ```

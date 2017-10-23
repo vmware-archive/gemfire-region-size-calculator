@@ -27,19 +27,22 @@ Undeploy the old function first.
 Member  |       Un-Deployed JAR       | Un-Deployed From JAR Location
 ------- | --------------------------- | ------------------------------------------------------------------------------------------------------
 server1 | functions-1.0.0.RELEASE.jar | server1/vf.gf#functions-1.0.0.RELEASE.jar#1
-server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1```
+server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1
+```
 
 ```gfsh>deploy --jar=functions/target/functions-1.0.0.RELEASE.jar
 Member  |        Deployed JAR         | Deployed JAR Location
 ------- | --------------------------- | ------------------------------------------------------------------------------------------------------
 server1 | functions-1.0.0.RELEASE.jar | server1/vf.gf#functions-1.0.0.RELEASE.jar#1
-server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1```
+server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1
+```
 
 ```gfsh>list functions
 Member  | Function
 ------- | -------------------------
 server1 | region-size-calculator
-server2 | region-size-calculator```
+server2 | region-size-calculator
+```
 
 ## Execution
 
@@ -57,7 +60,8 @@ Execution summary
 
            Member ID/Name            | Function Execution Result
 ------------------------------------ | -----------------------------------------------------------------------------------------
-192.168.0.10(server2:55895)<v8>:1071 | {Serialized values size=750,148, Keys size=24,528, Region type=Partitioned, Entries=511}```
+192.168.0.10(server2:55895)<v8>:1071 | {Serialized values size=750,148, Keys size=24,528, Region type=Partitioned, Entries=511}
+```
 
 
 Example: To calculate the size of the Customer partitioned region on server1 with a sample size of 5:

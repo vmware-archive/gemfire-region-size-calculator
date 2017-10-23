@@ -65,7 +65,6 @@ Example: To calculate the size of the Customer *partitioned* region on server2 w
 
 **gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server2**
 ```
-
 Execution summary
 
            Member ID/Name            | Function Execution Result
@@ -91,7 +90,6 @@ Example: To calculate the size of the Phone *replicated* region with a sample si
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone,5" --member=server1**
 ```
-
 Execution summary
 
            Member ID/Name             | Function Execution Result
@@ -103,7 +101,6 @@ Example: To calculate the size of the Phone *replicated* region with a sample si
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone,25" --member=server1**
 ```
-
 Execution summary
 
            Member ID/Name             | Function Execution Result
@@ -116,7 +113,6 @@ Example: To calculate the size of the Phone *replicated* region using all entrie
 
 **gfsh>execute function --id=region-size-calculator --arguments="Phone" --member=server1**
 ```
-
 Execution summary
 
            Member ID/Name             | Function Execution Result

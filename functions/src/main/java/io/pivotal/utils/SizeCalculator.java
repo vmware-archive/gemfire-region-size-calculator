@@ -1,7 +1,9 @@
 package io.pivotal.utils;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,16 +27,35 @@ public class SizeCalculator {
 	private long avgDeserializedRegionEntrySizeAfter = 0;
 	private long avgDeserializedKeySize = 0;
 	private long avgSerializedValueSize = 0;
+	private long avgDeserializedPdxValueSize = 0;
 	private long avgDeserializedValueSize = 0;
 
 	private long totalDeserializedRegionEntrySizeBefore;
 	private long totalDeserializedKeySize;
 	private long totalDeserializedValueSize;
+	private long totalDeserializedPdxValueSize;
 	private long totalDeserializedRegionEntrySizeAfter;
 	private long totalSerializedValueSize;
 	
 	private long regionTypeInd;
 	private long regionSize;
+
+	static String totalSerializedRegionEntrySizeBeforeLabel = "Total RegionEntry size (serialized)";
+	static String totalKeySizeLabel = "Total Key size";
+	static String totalDeserializedValueSizeLabel = "Total Value size (deserialized)";
+	static String totalDeserializedPdxValueSizeLabel = "Total PDX Value size (deserialized)";
+	static String totalDeserializedRegionEntrySizeAfterLabel = "Total RegionEntry size (deserialized)";
+	static String totalSerializedValueSizeLabel = "Total Value size (serialized)";
+	static String totalEntriesLabel = "_Total Entries";
+	static String totalSamplesLabel = "_Total Sampled Entries";
+
+	public static String grandTotalKeySizeLabel = "Keys size";
+	public static String grandTotalDeserializedValueSizeLabel = "Deserialized values size";
+	public static String grandTotalDeserializedPdxValueSizeLabel = "Deserialized PDX size";
+	public static String grandTotalSerializedValueSizeLabel = "Serialized values size";
+	public static String grandTotalEntriesLabel = "Entries";
+	
+	NumberFormat numberFormatter = NumberFormat.getNumberInstance(Locale.US);
 
 	/**
 	 * Creates an instance that logs all the output to <code>System.out</code>.
@@ -72,7 +93,7 @@ public class SizeCalculator {
 	 * 
 	 * @param string
 	 */
-	public Map<String, Long> sizeRegion(Region<?,?> region) {
+	public Map<String, String> sizeRegion(Region<?,?> region) {
 		return sizeRegion(region, 0);
 	}
 
@@ -84,7 +105,7 @@ public class SizeCalculator {
 	 *            The number of entries to calculate the size for. If 0 all the
 	 *            entries in the region are included.
 	 */
-	public Map<String, Long> sizeRegion(Region<?,?> region, int numberOfSamples) {
+	public Map<String, String> sizeRegion(Region<?,?> region, int numberOfSamples) {
 		if (region == null) {
 			throw new IllegalArgumentException("Region is null.");
 		}
@@ -104,7 +125,7 @@ public class SizeCalculator {
 	 *            Number of entries to size. If the value is 0, all the entries are
 	 *            sized.
 	 */
-	private Map<String, Long> sizePartitionedRegion(Region<?,?> region, long numberOfSamples) {
+	private Map<String, String> sizePartitionedRegion(Region<?,?> region, long numberOfSamples) {
 		regionTypeInd = 0L;
 		Region<?,?> primaryDataSet = PartitionRegionHelper.getLocalData(region);
 		regionSize = primaryDataSet.size();
@@ -127,7 +148,7 @@ public class SizeCalculator {
 		}
 
 		dumpTotalAndAverageSizes(numberOfSamples);
-		Map<String, Long> results = packageResults(numberOfSamples);
+		Map<String, String> results = packageResults(numberOfSamples);
 		clearTotals();
 		return results;
 	}
@@ -140,7 +161,7 @@ public class SizeCalculator {
 	 *            Number of entries to size. If the value is 0, all the entries are
 	 *            sized.
 	 */
-	private Map<String, Long> sizeReplicatedOrLocalRegion(Region<?,?> region, long numberOfSamples) {
+	private Map<String, String> sizeReplicatedOrLocalRegion(Region<?,?> region, long numberOfSamples) {
 		regionTypeInd = 1L;
 		Set<?> entries = region.entrySet();
 		regionSize = entries.size();
@@ -162,7 +183,7 @@ public class SizeCalculator {
 		}
 
 		dumpTotalAndAverageSizes(numberOfSamples);
-		Map<String, Long> results = packageResults(numberOfSamples);
+		Map<String, String> results = packageResults(numberOfSamples);
 		clearTotals();
 		return results;
 	}
@@ -173,22 +194,23 @@ public class SizeCalculator {
 		int deserializedKeySize = ReflectionObjectSizer.getInstance().sizeof(entry.getKey());
 		Object value = entry.getValue();
 		int deserializedValueSize;
+		int deserializedPdxValueSize = 0;
 		if (value instanceof PdxInstance) {
 			Object actualObj = ((PdxInstance) value).getObject();
-			deserializedValueSize = sizeObject(actualObj);
-		} else {
-			deserializedValueSize = sizeObject(value);
+			deserializedPdxValueSize = sizeObject(actualObj);
 		}
+		deserializedValueSize = sizeObject(value);
 		int deserializedRegionEntrySizeAfter = ReflectionObjectSizer.getInstance().sizeof(re);
 		this.totalDeserializedRegionEntrySizeBefore += deserializedRegionEntrySizeBefore;
 		this.totalDeserializedKeySize += deserializedKeySize;
 		this.totalDeserializedValueSize += deserializedValueSize;
+		this.totalDeserializedPdxValueSize += deserializedPdxValueSize;
 		this.totalSerializedValueSize += serializedValueSize;
 		this.totalDeserializedRegionEntrySizeAfter += deserializedRegionEntrySizeAfter;
 		log("RegionEntry (key = " + re.getKey() + ") size: " + deserializedRegionEntrySizeBefore + " (serialized), "
 				+ deserializedRegionEntrySizeAfter + " (deserialized). Key size: " + deserializedKeySize
 				+ ". Value size: " + serializedValueSize + " (serialized), " + deserializedValueSize
-				+ "(deserialized).");
+				+ "(deserialized)." + ". Value type: " + value.getClass().getSimpleName());
 		
 		String histStats = "";
 		try {
@@ -226,12 +248,16 @@ public class SizeCalculator {
 		log("Total RegionEntry size (deserialized): " + this.totalDeserializedRegionEntrySizeAfter);
 		log("Total Key size: " + this.totalDeserializedKeySize);
 		log("Total Value size (serialized): " + this.totalSerializedValueSize);
+		if (this.totalDeserializedPdxValueSize > 0) {
+			log("Total Pdx Value size (deserialized): " + this.totalDeserializedPdxValueSize);
+		}
 		log("Total Value size (deserialized): " + this.totalDeserializedValueSize);
 		if (totalSamples > 0) {
 			avgDeserializedRegionEntrySizeBefore = (int) (this.totalDeserializedRegionEntrySizeBefore / totalSamples);
 			avgDeserializedRegionEntrySizeAfter = (int) (this.totalDeserializedRegionEntrySizeAfter / totalSamples);
 			avgDeserializedKeySize = (int) (this.totalDeserializedKeySize / totalSamples);
 			avgSerializedValueSize = (int) (this.totalSerializedValueSize / totalSamples);
+			avgDeserializedPdxValueSize = (int) (this.totalDeserializedPdxValueSize / totalSamples);
 			avgDeserializedValueSize = (int) (this.totalDeserializedValueSize / totalSamples);
 		}
 
@@ -240,25 +266,22 @@ public class SizeCalculator {
 		log("Average Key size: " + avgDeserializedKeySize);
 		log("Average Value size (serialized): " + avgSerializedValueSize);
 		log("Average Value size (deserialized): " + avgDeserializedValueSize);
+		log("Average PDX Value size (deserialized): " + avgDeserializedPdxValueSize);
 		log("--------------");
 	}
 
-	private Map<String, Long> packageResults(long totalSamples) {
-		Map<String, Long> results = new HashMap<>();
-
-		results.put("Average RegionEntry size (serialized)", avgDeserializedRegionEntrySizeBefore);
-		results.put("Average RegionEntry size (deserialized)", avgDeserializedRegionEntrySizeAfter);
-		results.put("Average Key size", avgDeserializedKeySize);
-		results.put("Average Value size (serialized)", avgSerializedValueSize);
-		results.put("Average Value size (deserialized)", avgDeserializedValueSize);
-		results.put("Total RegionEntry size (serialized)", this.totalDeserializedRegionEntrySizeBefore);
-		results.put("Total RegionEntry size (deserialized)", this.totalDeserializedRegionEntrySizeAfter);
-		results.put("Total Key size", this.totalDeserializedKeySize);
-		results.put("Total Value size (serialized)", this.totalSerializedValueSize);
-		results.put("Total Value size (deserialized)", this.totalDeserializedValueSize);
-		results.put("_Region Type indicator", regionTypeInd);
-		results.put("_Total Sampled Entries", (long) totalSamples);
-		results.put("_Total Entries", (long) regionSize);
+	private Map<String, String> packageResults(long totalSamples) {
+		Map<String, String> results = new HashMap<>();
+		results.put(grandTotalKeySizeLabel, numberFormatter.format(avgDeserializedKeySize * regionSize));
+		if (avgDeserializedValueSize != avgSerializedValueSize) {
+			results.put(grandTotalDeserializedValueSizeLabel, numberFormatter.format(avgDeserializedValueSize * regionSize));
+		}
+		if (avgDeserializedPdxValueSize > 0) {
+			results.put(grandTotalDeserializedPdxValueSizeLabel, numberFormatter.format(avgDeserializedPdxValueSize * regionSize));
+		}
+		results.put(grandTotalSerializedValueSizeLabel, numberFormatter.format(avgSerializedValueSize * regionSize));
+		results.put(grandTotalEntriesLabel, numberFormatter.format((long) regionSize));
+		results.put("Region type", (regionTypeInd == 0) ? "Partitioned" : "Replicated");
 
 		return results;
 	}

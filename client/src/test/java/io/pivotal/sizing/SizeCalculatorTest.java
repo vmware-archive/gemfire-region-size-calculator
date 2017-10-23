@@ -1,7 +1,6 @@
 package io.pivotal.sizing;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -20,18 +19,17 @@ import com.gemstone.gemfire.cache.client.ClientCacheFactory;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
 
-public class SizeCalculator {
+public class SizeCalculatorTest {
 
 	private static LogWriter logger = null;
 
-	static Region<String, ?> customerRegion;
-	static Region<String, ?> phoneRegion;
+	static Region<String, ?> clientRegion;
 	static ClientCache clientCache = null;
 	static String sizeCalculationFunction = "size-calculation-function";
 
 	static {
 		ClientCacheFactory ccf = new ClientCacheFactory();
-		ccf.set("cache-xml-file", "META-INF/spring/gemfire/client-cache.xml");
+		ccf.set("cache-xml-file", "META-INF/gemfire/client-cache.xml");
 		System.out.println(new File(".").getAbsolutePath());
 		clientCache = ccf.create();
 		logger = clientCache.getLogger();
@@ -48,22 +46,24 @@ public class SizeCalculator {
 	public static void main(String[] args) {
 
 		String regionName = args[0];
-		customerRegion = clientCache.getRegion(regionName);
-		if (customerRegion == null) {
+		clientRegion = clientCache.getRegion(regionName);
+		if (clientRegion == null) {
 			logger.info("Supply a defined region name to the client");
 			logger.info("");
 			return;
 		}
-
-		List<Object> arguments = new ArrayList<Object>();
-
-		// sample the top 5 sizes from the region
-		arguments.add(regionName);
-		arguments.add(300);
+		
+		String[] arguments = new String[2];
+		arguments[0] = regionName;
+		// check for sample count for the region
+		String sampleCount = "0";
+		if (args.length > 1) {
+			sampleCount = args[1];
+			arguments[1] = sampleCount;
+		}
 		StopWatch sw = new StopWatch();
 		sw.start();
-		SizingResultCollector sizingResultCollector = new SizingResultCollector();
-		ResultCollector<?, ?> rc = FunctionService.onRegion(customerRegion).withCollector(sizingResultCollector)
+		ResultCollector<?, ?> rc = FunctionService.onRegion(clientRegion)
 				.withArgs(arguments).execute(sizeCalculationFunction);
 		sw.stop();
 		logger.info("Query took " + sw.getTotalTimeMillis() + "ms: ");

@@ -14,8 +14,8 @@ start server --name=server1 --classpath=../../domain/target/domain-1.0.0.jar --s
 #start server --name=server2 --server-port=0 --properties-file=config/gemfire.properties --initial-heap=1g --max-heap=1g
 
 # deploy the functions
-undeploy --jar=gemfire-server-1.0.0.jar
-deploy --jar=../server/target/gemfire-server-1.0.0.jar
+undeploy --jar=functions-1.0.0.jar
+deploy --jar=../functions/target/functions-1.0.0.jar
 
 create region --name=Customer --type=PARTITION
 create region --name=Phone --type=PARTITION

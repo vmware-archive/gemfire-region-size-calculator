@@ -10,8 +10,6 @@
   </pdx>
   <region name="Customer">
     <region-attributes data-policy="partition"/>
-    <index name="prodProcessorIx" key-index="false" type="range" from-clause="/Customer" expression="srcProductProcessorId"/>
-    <index name="cIDIx" key-index="false" type="range" from-clause="/Customer" expression="customerDetailId"/> 
   </region>
   <region name="Phone">
     <region-attributes data-policy="partition"/>

@@ -1,7 +1,6 @@
 package io.pivotal.functions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -19,7 +18,7 @@ import io.pivotal.utils.SizeCalculator;
 @SuppressWarnings("serial")
 public class SizeCalculatorFunction extends FunctionAdapter implements Declarable {
 
-	public static final String ID = "size-calculation-function";
+	public static final String ID = "region-size-calculator";
 
 	private static LogWriter log;
 
@@ -27,25 +26,24 @@ public class SizeCalculatorFunction extends FunctionAdapter implements Declarabl
 		log = CacheFactory.getAnyInstance().getDistributedSystem().getLogWriter();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(FunctionContext fc) {
 
 		log.info("I am in the " + this.getClass().getName() + " function");
 		StopWatch sw = new StopWatch();
 		
-		List<Object> args = (List<Object>) fc.getArguments();
-		if (args.isEmpty()) {
+		String[] args = (String[]) fc.getArguments();
+		if (args.length == 0) {
 			Map<String, Long> results = new HashMap<String, Long>();
 			fc.getResultSender().lastResult(results);
 		}
-		String regionName = (String) args.get(0);
+		String regionName = (String) args[0];
 		if (regionName == null) {
 			regionName = "Unsupplied region name";
 		}
 		int sampleSize = 0;
-		if (args.size() > 1) {
-			sampleSize = (Integer) args.get(1);
+		if (args.length > 1) {
+			sampleSize = Integer.parseInt( args[1]);
 		}
 		Region<?, ?> region = CacheFactory.getAnyInstance().getRegion(regionName);
 		log.info("Sizing region " + regionName + " with a sample size of " + sampleSize);
@@ -59,12 +57,26 @@ public class SizeCalculatorFunction extends FunctionAdapter implements Declarabl
 		
 		sw.start();
 		SizeCalculator sizeCalculator = new SizeCalculator(log);
-		Map<String, Long> results = sizeCalculator.sizeRegion(region, sampleSize);
+		Map<String, String> results = sizeCalculator.sizeRegion(region, sampleSize);
 		sw.stop();
 		log.info("Sizing Calculation took: " + sw.getTotalTimeMillis() + " millis");
 		fc.getResultSender().lastResult(results);
 	}
 
+	private String serializeResults(Map<String, Long> results) {
+		StringBuilder sb = new StringBuilder();
+		results.forEach((k,v) -> selectSummaryResults(sb, k, v));
+		return sb.toString();
+	}
+	
+	private StringBuilder selectSummaryResults(StringBuilder sb, String key, Long value) {
+		
+		
+		if (key.equalsIgnoreCase(SizeCalculator.grandTotalKeySizeLabel)) {
+			sb.append(key + " = " + value + "\n");
+		}
+		return sb;
+	}
 
 	  @Override
 	  public void init(Properties props) {

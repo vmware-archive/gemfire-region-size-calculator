@@ -18,26 +18,32 @@ The Region Size Calculator will return both the size of the deserialized storage
 ## Installation
 
 The code is packaged as a function. Just deploy the function once the cluster is up.
+
 I include a sample launch script for the cluster. Execute startall.sh from the grid directory.
+*grid $ . startall.sh*
 
 Here is an example on a two-node cluster:
 
 Undeploy the old function first.
-```gfsh>undeploy --jar=functions-1.0.0.RELEASE.jar
+
+*gfsh>undeploy --jar=functions-1.0.0.RELEASE.jar*
+```
 Member  |       Un-Deployed JAR       | Un-Deployed From JAR Location
 ------- | --------------------------- | ------------------------------------------------------------------------------------------------------
 server1 | functions-1.0.0.RELEASE.jar | server1/vf.gf#functions-1.0.0.RELEASE.jar#1
 server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1
 ```
 
-```gfsh>deploy --jar=functions/target/functions-1.0.0.RELEASE.jar
+*gfsh>deploy --jar=functions/target/functions-1.0.0.RELEASE.jar*
+```
 Member  |        Deployed JAR         | Deployed JAR Location
 ------- | --------------------------- | ------------------------------------------------------------------------------------------------------
 server1 | functions-1.0.0.RELEASE.jar | server1/vf.gf#functions-1.0.0.RELEASE.jar#1
 server2 | functions-1.0.0.RELEASE.jar | server2/vf.gf#functions-1.0.0.RELEASE.jar#1
 ```
 
-```gfsh>list functions
+*gfsh>list functions*
+```
 Member  | Function
 ------- | -------------------------
 server1 | region-size-calculator
@@ -55,7 +61,8 @@ Optional argument: the number of samples to take. If you have a region with 1 bi
 Function execution arguments in gfsh are comma-delimited strings.
  
 Example: To calculate the size of the Customer partitioned region on server2 with a sample size of 5:
-```gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server2
+*gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server2*
+```
 Execution summary
 
            Member ID/Name            | Function Execution Result
@@ -65,18 +72,20 @@ Execution summary
 
 
 Example: To calculate the size of the Customer partitioned region on server1 with a sample size of 5:
-```gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server1
+*gfsh>execute function --id=region-size-calculator --arguments="Customer,5" --member=server1*
+```
 Execution summary
 
            Member ID/Name             | Function Execution Result
 ------------------------------------- | -----------------------------------------------------------------------------------------
 192.168.0.10(server1:50892)<v1>:56765 | {Serialized values size=807,828, Keys size=23,472, Region type=Partitioned, Entries=489}
-
-Important note: a partitioned region returns the answer node by node
 ```
+*Important note:* a partitioned region returns the answer node by node
+
 
 Example: To calculate the size of the Phone replicated region with a sample size of 5:
-```gfsh>execute function --id=region-size-calculator --arguments="Phone,5" --member=server1
+*gfsh>execute function --id=region-size-calculator --arguments="Phone,5" --member=server1*
+```
 Execution summary
 
            Member ID/Name             | Function Execution Result
@@ -85,7 +94,8 @@ Execution summary
 ```
 
 Example: To calculate the size of the Phone replicated region with a sample size of 25:
-```gfsh>execute function --id=region-size-calculator --arguments="Phone,25" --member=server1
+*gfsh>execute function --id=region-size-calculator --arguments="Phone,25" --member=server1*
+```
 Execution summary
 
            Member ID/Name             | Function Execution Result
@@ -95,7 +105,8 @@ Execution summary
 
 
 Example: To calculate the size of the Phone replicated region using all entries:
-```gfsh>execute function --id=region-size-calculator --arguments="Phone" --member=server1
+*gfsh>execute function --id=region-size-calculator --arguments="Phone" --member=server1*
+```
 Execution summary
 
            Member ID/Name             | Function Execution Result
